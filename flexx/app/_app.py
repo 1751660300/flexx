@@ -435,14 +435,16 @@ class App:
             os.chdir(ori_dir)
         # Copy modules
         appdir = os.path.join(dirname, distdir, name)
+        fpath = os.path.join(appdir, "_internal", "source")
         assets.update_modules()
         for module_name in {x.split(".")[0] for x in assets.modules.keys()}:
             if module_name == "__main__":
-                fname = os.path.join(appdir, "source", main_module + ".py")
+                if not os.path.exists(fpath): os.makedirs(fpath)
+                fname = os.path.join(fpath, main_module + ".py")
                 with open(fname, "wb") as f:
                     f.write(main_code.encode())
             else:
-                freeze.copy_module(module_name, appdir)
+                freeze.copy_module(module_name, os.path.join(appdir, "_internal"))
 
 
 # todo: thread safety
