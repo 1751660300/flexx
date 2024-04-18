@@ -397,20 +397,22 @@ class App:
                     main_code = main_code.replace(line, comment + line.lstrip())
         # Create the main script to freeze
         script_filename = os.path.join(dirname, name + ".py")
-        lines = ["from flexx.util import freeze", "freeze.install()"]
+        lines = ["import multiprocessing", "from flexx.util import freeze", "freeze.install()"]
         lines.append("from {} import {} as Main".format(main_module,
                                                        self._cls.__name__))
         lines.append("from flexx import flx")
+        lines.append("if __name__ == '__main__':")
+        lines.append("    multiprocessing.freeze_support()")
         args_str = ", ".join(repr(x) for x in self.args)
         kwargs_str = ", ".join(key + "=" + repr(x) for key, x in self.kwargs.items())
         args_str = ", " + args_str if args_str else args_str
         kwargs_str = ", " + kwargs_str if kwargs_str else kwargs_str
-        lines.append("app = flx.App(Main{}{})".format(args_str, kwargs_str))
+        lines.append("    app = flx.App(Main{}{})".format(args_str, kwargs_str))
         if launch:
-            lines.append("app.launch('{}')".format(launch))
+            lines.append("    app.launch('{}')".format(launch))
         else:
-            lines.append("app.serve('')")
-        lines.append("flx.run()")
+            lines.append("    app.serve('')")
+        lines.append("    flx.run()")
         with open(script_filename, "wb") as f:
             f.write("\n".join(lines).encode())
         # Prepare for freezing
