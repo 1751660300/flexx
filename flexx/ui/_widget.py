@@ -495,11 +495,12 @@ class Widget(app.JsComponent):
         map = {'css_class': 'className', 'class': 'className'}
         for key, val in vnode.props.items():
             ob = node
-            parts = key.replace('__', '.').split('.')
-            for i in range(len(parts)-1):
-                ob = ob[parts[i]]
-            key = parts[len(parts)-1]
-            ob[map.get(key, key)] = val
+            ob.setAttribute(key, val)
+            # parts = key.replace('__', '.').split('.')
+            # for i in range(len(parts)-1):
+            #     ob = ob[parts[i]]
+            # key = parts[len(parts)-1]
+            # ob[map.get(key, key)] = val
 
         # Resolve content
         if vnode.children is None:
